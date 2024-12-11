@@ -1,5 +1,60 @@
-Draft Tournament Support Features
----------------------------------
+Draft Tournament Support
+------------------------
+
+## Overview
+
+A draft tournament is one where a group of trainers take turns selecting
+a pokemon from the allowed pool of pokemon. Once a pokemon has been selected
+by one trainer, no other trainer can select it. Allowed pokemon pools
+can be open or thematically selected. Some things to consider when
+choosing a pool:
+
+- shadow
+- mega
+- regional (e.g. galarian stunfisk vs unova stunfisk)
+- move set (e.g. genesect drive differences)
+- purified (probably doesn't matter)
+- ??other??
+
+Some draft tournaments start with one or more ban rounds, where pokemon
+in the allowed pool are banned by trainers. If banned, the pokemon is no 
+longer available for selection.
+
+A draft order is usually set at the beginning of the tournament, and trainers
+take their turns banning or drafting according to that order. It is common
+practice for the draft order to follow a "snake" pattern, where the last
+trainer in the first round becomes the first trainer in the next round, and
+the draft order reverses each round. *Are there other draft orders that
+people like or use?*
+
+Once each trainer has drafted their team of pokemon, the trainers battle using
+only their selected pokemon. Formats that I've seen include
+
+- teams of 6 pokemon, each battle each trainer selects 3 to bring
+- teams of 8 pokemon, each round the opponent trainer temporarily bans 2 of 
+  the trainer's pokemon, each battle the trainer selects 3 of the 
+  remaining 6 to bring
+- ?Others?
+
+The tournament is usually run in rounds, where trainers are paired up,
+do a best-of-n set of battles, and record the result. Currently (2024),
+the tournament pairings and recording of battles are usually done using
+the [Dracoviz system](https://www.dracoviz.gg).
+
+When all of the rounds are completed, the trainer with the best record
+wins the tournament. Again, this ranking is usually done within the
+Dracoviz system at the current time.
+
+# Draft Tournament Support Features
+
+We plan to create a discord bot to support tournament creation and
+management. Specifically, the first iteration will be able to support
+the drafting process, leaving the pairing and round management to the
+Dracoviz system.
+
+This is a list of the actions that the bot will provide to support the
+drafting process. The following subsections of this document will provide
+more details about each of these actions.
 
 - User registers for tournament
 - User leaves tournament
@@ -13,7 +68,7 @@ Draft Tournament Support Features
 - Admin starts draft
 - Admin starts battle round
 - Admin sends reminders to complete round battles
-- Admin removes player from tournament
+- Admin removes trainer from tournament
 
 
 ## User registers for tournament
@@ -77,12 +132,13 @@ Draft Tournament Support Features
   This could happen by manual command of admin, or by schedule.
   - tag all users who have not had their battles completely reported.
 
-## Admin removes player from tournament
+## Admin removes trainer from tournament
   - ??
 
 
-User Information
-----------------
+# Data Structures
+
+## User Information
 
 - Discord name
 - Discord name in server
@@ -91,12 +147,11 @@ User Information
 - POGO trainer code
 - User's preferred timezone
 
-Tournament Information
-----------------------
+## Tournament Information
 
 - Discord server name
 - Discord server ID
-- Discord role for all players in the tournament
+- Discord role for all trainers in the tournament
 - Tournament name
 - Tournament description
 - Tournament CP cap
@@ -106,8 +161,7 @@ Tournament Information
 - (not yet) tournament disallowed pokemon list
 - (not yet) tournament allowed pokemon list
 
-Pokemon Species Information
--------------------
+## Pokemon Species Information
 
 - Name
 - Dex number
@@ -116,10 +170,9 @@ Pokemon Species Information
 - Shadow status
 - ?? Anything else that could be used to distinguish between unique selections
 
-TODO
-----
+# TODO
 
 Is there an API for Dracoviz that we could use to download data for rounds? 
-What about submit team selections for players? What about players reporting
+What about submit team selections for trainers? What about trainers reporting
 their match results?
 
