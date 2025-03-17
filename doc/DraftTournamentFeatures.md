@@ -76,6 +76,8 @@ Draft Tournament Support Features
 ## Admin sends reminders to complete round battles
   This could happen by manual command of admin, or by schedule.
   - tag all users who have not had their battles completely reported.
+  - automatic reminders would be better than manual commands.
+  - manual command could still be an option.
 
 ## Admin removes player from tournament
   - ??
