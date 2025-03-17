@@ -48,6 +48,20 @@ class DatabaseManager:
         self.cursor.execute(sql, params)
         return self.cursor.fetchone()
 
+    def fetchall(self, sql, params=()):
+        """
+        Executes an SQL statement and returns the all rows.
+
+        Args:
+            sql (str): The SQL statement to execute.
+            params (tuple): A tuple of parameters to substitute into the SQL statement.
+
+        Returns:
+            A list of rows returned by the query, or empty list if no rows are found.
+        """
+        self.cursor.execute(sql, params)
+        return self.cursor.fetchall()
+
     def create_table(self, create_table_sql):
         """
         Creates a table in the database.

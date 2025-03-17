@@ -12,6 +12,8 @@ def load_json(filename):
     if os.path.exists(filename):
         with open(filename, 'r') as f:
             data = json.load(f)
+    else:
+        raise FileNotFoundError(filename)
     return data
 
 def is_shadow(species_id):

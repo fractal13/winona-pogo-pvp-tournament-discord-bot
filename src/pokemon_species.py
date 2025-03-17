@@ -92,6 +92,52 @@ class PokemonSpecies:
         return None
 
     @classmethod
+    def get_by_id_number(cls, id_number, db_manager):
+        """
+        Retrieves a PokemonSpecies object from the database by ID number.
+
+        Args:
+            id_number (int): The ID number in the database
+            db_manager (DatabaseManager): The database manager instance.
+
+        Returns:
+            A PokemonSpecies object if found, otherwise None.
+        """
+        sql = "SELECT * FROM pokemon_species WHERE id = ?"
+        row = db_manager.fetchone(sql, (id_number,))
+        if row:
+            return cls(*row[1:], species_id=row[0], db_manager=db_manager)
+        return None
+
+    @classmethod
+    def get_dex_numbers(cls, db_manager):
+        """
+        Retrieves all PokemonSpecies Dex numbers.
+
+        Args:
+            db_manager (DatabaseManager): The database manager instance.
+
+        Returns:
+            A list of PokemonSpecies dex numbers.
+        """
+        sql = "SELECT dex_number FROM pokemon_species"
+        return [ row[0] for row in db_manager.fetchall(sql) ]
+
+    @classmethod
+    def get_id_numbers(cls, db_manager):
+        """
+        Retrieves all PokemonSpecies ID numbers.
+
+        Args:
+            db_manager (DatabaseManager): The database manager instance.
+
+        Returns:
+            A list of PokemonSpecies id numbers.
+        """
+        sql = "SELECT id FROM pokemon_species"
+        return [ row[0] for row in db_manager.fetchall(sql) ]
+
+    @classmethod
     def create_pokemon_species_table(cls, db_manager):
         """
         Creates the 'pokemon_species' table in the database.
