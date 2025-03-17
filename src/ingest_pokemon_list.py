@@ -65,7 +65,10 @@ def insert_all(data, db_manager):
     return
 
 def main(argv):
-    db_manager = DatabaseManager("pokemon_database.db") 
+    db_name = "pokemon_database.db"
+    if len(argv) > 1:
+        db_name = argv[1]
+    db_manager = DatabaseManager(db_name) 
     PokemonSpecies.create_pokemon_species_table(db_manager)
     data = load_json("../external/pvpoke/src/data/gamemaster/pokemon.json")
     insert_all(data, db_manager)

@@ -18,7 +18,10 @@ def list_all_by_id_number(db_manager):
 
 
 def main(argv):
-    db_manager = DatabaseManager("pokemon_database.db") 
+    db_name = "my_database.db"
+    if len(argv) > 1:
+        db_name = argv[1]
+    db_manager = DatabaseManager(db_name)
     list_all_by_id_number(db_manager)
     db_manager.close()
     return
