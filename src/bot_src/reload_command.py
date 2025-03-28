@@ -18,7 +18,7 @@ class ReloadExtension(interactions.Extension):
         choices=[
             interactions.SlashCommandChoice(name="ping_command", value="ping_command"),
             interactions.SlashCommandChoice(name="tournament_command", value="tournament_command"),
-            interactions.SlashCommandChoice(name="reload_extension", value="reload_extension"),
+            interactions.SlashCommandChoice(name="reload_command", value="reload_command"),
         ],    
     )
     async def reload_extension(self, ctx: interactions.SlashContext, extension: str):
