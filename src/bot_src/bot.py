@@ -13,6 +13,7 @@ client = interactions.Client(token=TOKEN)
 
 client.load_extension("ping_command")
 client.load_extension("tournament_command")
+client.load_extension("reload_command")
 
 def cleanup():
     print("Bot shutting down...")
