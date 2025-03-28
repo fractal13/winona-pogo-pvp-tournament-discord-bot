@@ -11,6 +11,6 @@ install-deb:
 	dpkg -l | egrep '^ii *libsqlite3-dev' 2>&1 > /dev/null || sudo apt install libsqlite3-dev
 
 install-pip: $(VENV)
-	. $(VENV)/bin/activate; pip3 install -r requirements.txt
+	. $(VENV)/bin/activate; pip3 install -U -r requirements.txt
 
 

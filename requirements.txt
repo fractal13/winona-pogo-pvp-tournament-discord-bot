@@ -1,2 +1,4 @@
 pip
 pysqlite3
+discord-py-interactions
+python-dotenv
