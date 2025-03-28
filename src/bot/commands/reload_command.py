@@ -27,7 +27,7 @@ class ReloadCommand(interactions.Extension):
     )
     async def reload_command(self, ctx: interactions.SlashContext, extension: str):
         try:
-            self.client.reload_extension(extension)
+            self.client.reload_extension("commands."+extension)
             await ctx.send(f"Extension '{extension}' reloaded successfully.")
         except Exception as e:
             await ctx.send(f"Failed to reload extension '{extension}': {e}")
