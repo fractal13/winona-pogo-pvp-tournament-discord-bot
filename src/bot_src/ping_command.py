@@ -18,4 +18,4 @@ class PingCommand(interactions.Extension):
         await ctx.send(f"Pong! Latency: {round(self.client.latency, 1)}ms")
 
 def setup(client):
-    PingCommands(client)
+    PingCommand(client)

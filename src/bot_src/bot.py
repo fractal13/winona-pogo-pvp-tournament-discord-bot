@@ -15,8 +15,11 @@ def cleanup():
 def main():
     dotenv.load_dotenv()
     TOKEN = os.getenv("BOT_TOKEN")
-
-    client = interactions.Client(token=TOKEN)
+    DEBUG_GUILD_ID = os.getenv("DEBUG_GUILD_ID")
+    if DEBUG_GUILD_ID:
+        client = interactions.Client(token=TOKEN, debug_score=int(DEBUG_GUILD_ID))
+    else:
+        client = interactions.Client(token=TOKEN)
 
     client.load_extension("ping_command")
     client.load_extension("tournament_command")

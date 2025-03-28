@@ -2,13 +2,17 @@
 
 import interactions
 
-class ReloadExtension(interactions.Extension):
+class ReloadCommand(interactions.Extension):
     def __init__(self, client):
         self.client: interactions.Client = client
 
     @interactions.slash_command(
-        name="reload",
-        description="Reloads an extension.",
+        name="winona",
+        description="Winona Bot commands.",
+        group_name="admin",
+        group_description="Admin commands.",
+        sub_cmd_name="reload",
+        sub_cmd_description="Reloads an extension.",
     )
     @interactions.slash_option(
         name="extension",
@@ -19,9 +23,9 @@ class ReloadExtension(interactions.Extension):
             interactions.SlashCommandChoice(name="ping_command", value="ping_command"),
             interactions.SlashCommandChoice(name="tournament_command", value="tournament_command"),
             interactions.SlashCommandChoice(name="reload_command", value="reload_command"),
-        ],    
+        ],
     )
-    async def reload_extension(self, ctx: interactions.SlashContext, extension: str):
+    async def reload_command(self, ctx: interactions.SlashContext, extension: str):
         try:
             self.client.reload_extension(extension)
             await ctx.send(f"Extension '{extension}' reloaded successfully.")
@@ -29,4 +33,4 @@ class ReloadExtension(interactions.Extension):
             await ctx.send(f"Failed to reload extension '{extension}': {e}")
 
 def setup(client):
-    ReloadExtension(client)
+    ReloadCommand(client)
