@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
+
+
 import interactions
 
-class TournamentExtension(interactions.Extension):
+class TournamentCommand(interactions.Extension):
     def __init__(self, client):
         self.client: interactions.Client = client
         self.tournaments = {}
 
     @interactions.slash_command(
-        name="tournament",
-        description="Manage tournaments.",
+        name="winona",
+        description="Winona Bot commands.",
+        group_name="tournament",
+        group_description="Tournament commands.",
         sub_cmd_name="create",
         sub_cmd_description="Create a new tournament.",
     )
@@ -39,10 +43,11 @@ class TournamentExtension(interactions.Extension):
         )
         await ctx.send(embeds=embed)
 
-
     @interactions.slash_command(
-        name="tournament",
-        description="Manage tournaments.",
+        name="winona",
+        description="Winona Bot commands.",
+        group_name="tournament",
+        group_description="Tournament commands.",
         sub_cmd_name="list",
         sub_cmd_description="List current tournaments.",
     )
@@ -62,4 +67,4 @@ class TournamentExtension(interactions.Extension):
         await ctx.send(embeds=embed)
 
 def setup(client):
-    TournamentExtension(client)
+    TournamentCommand(client)
