@@ -20,14 +20,15 @@ class ReloadCommand(interactions.Extension):
         opt_type=interactions.OptionType.STRING,
         required=True,
         choices=[
-            interactions.SlashCommandChoice(name="ping_command", value="ping_command"),
-            interactions.SlashCommandChoice(name="tournament_command", value="tournament_command"),
-            interactions.SlashCommandChoice(name="reload_command", value="reload_command"),
+            interactions.SlashCommandChoice(name="ping", value="ping_command"),
+            interactions.SlashCommandChoice(name="list_roles", value="list_roles_command"),
+            interactions.SlashCommandChoice(name="tournament", value="tournament_command"),
+            interactions.SlashCommandChoice(name="reload", value="reload_command"),
         ],
     )
     async def reload_command(self, ctx: interactions.SlashContext, extension: str):
         try:
-            self.client.reload_extension("commands."+extension)
+            self.client.reload_extension("winona.bot.commands."+extension)
             await ctx.send(f"Extension '{extension}' reloaded successfully.")
         except Exception as e:
             await ctx.send(f"Failed to reload extension '{extension}': {e}")

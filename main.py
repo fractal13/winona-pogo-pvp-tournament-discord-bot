@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import winona.cli.main
+import winona.bot.bot
+winona.bot.bot.main()
 
-winona.cli.main.main()
+# import winona.cli.main
+# winona.cli.main.main()
 
