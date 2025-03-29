@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import interactions
+from .checks import admin_channel_check
 
 class ListRolesCommands(interactions.Extension):
     def __init__(self, client):
@@ -15,6 +16,10 @@ class ListRolesCommands(interactions.Extension):
         sub_cmd_description="Lists all visible roles in the guild.",
     )
     async def list_roles(self, ctx: interactions.SlashContext):
+        if ctx.guild is None:
+            await ctx.send("This command can only be used in a server.")
+            return
+
         roles = ctx.guild.roles  # Get all roles in the guild.
 
         if not roles:
@@ -43,6 +48,7 @@ class ListRolesCommands(interactions.Extension):
         opt_type=interactions.OptionType.ROLE,
         required=True,
     )
+    @interactions.check(admin_channel_check)
     async def role_info(self, ctx: interactions.SlashContext, role: interactions.Role):
         embed = interactions.Embed(title=f"Role Info: {role.name}", color=role.color)
         embed.add_field(name="ID", value=role.id, inline=False)
@@ -60,5 +66,5 @@ class ListRolesCommands(interactions.Extension):
 
         await ctx.send(embeds=embed)
 
-def setup(client):
+def setup(client: interactions.Client):
     ListRolesCommands(client)
