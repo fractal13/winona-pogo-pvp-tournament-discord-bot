@@ -2,7 +2,7 @@
 
 import sqlite3
 from typing import Optional
-from database_manager import DatabaseManager
+from ..database_manager import DatabaseManager
 import sys
 
 

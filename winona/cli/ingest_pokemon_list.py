@@ -4,8 +4,8 @@ import json
 import os
 import re
 import sys
-from pokemon_species import PokemonSpecies
-from database_manager import DatabaseManager
+from ..database import DatabaseManager
+from ..database.models.pokemon_species import PokemonSpecies
 
 def load_json(filename):
     data = {}
@@ -64,15 +64,23 @@ def insert_all(data, db_manager):
         insert_one(entry, db_manager)
     return
 
-def main(argv):
-    db_name = "pokemon_database.db"
-    if len(argv) > 1:
-        db_name = argv[1]
-    db_manager = DatabaseManager(db_name) 
+def create_pokemon_database(db_file):
+    # TODO: This is fragile
+    source_json = "./external/pvpoke/src/data/gamemaster/pokemon.json"
+    if not os.path.exists(source_json):
+        raise FileNotFoundError(source_json)
+    db_manager = DatabaseManager(db_file) 
     PokemonSpecies.create_pokemon_species_table(db_manager)
-    data = load_json("../external/pvpoke/src/data/gamemaster/pokemon.json")
+    data = load_json(source_json)
     insert_all(data, db_manager)
     db_manager.close()
+    return
+
+def main(argv):
+    db_file = "pokemon_database.db"
+    if len(argv) > 1:
+        db_file = argv[1]
+    create_pokemon_database(db_file)
     return
 
 

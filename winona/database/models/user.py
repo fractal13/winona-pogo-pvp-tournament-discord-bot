@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from typing import Optional
-from database_manager import DatabaseManager
+from ..database_manager import DatabaseManager
 import sys
 
 class User:
