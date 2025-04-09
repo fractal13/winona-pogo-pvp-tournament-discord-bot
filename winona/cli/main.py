@@ -13,7 +13,8 @@ def parse_arguments(argv):
 
     parser.add_argument(
         "action",
-        choices=["create-user-db", "create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id"],
+        choices=["create-user-db", "create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id",
+                 "list-users" ],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -35,40 +36,61 @@ def parse_arguments(argv):
 
     return parser.parse_args(argv)
 
+def create_user_database_UI(args):
+    db_file = args.db_file
+    print(f"Creating user database: {db_file}")
+    create_user_database(db_file)
+    return
+
+def create_pokemon_database_UI(args):
+    db_file = args.db_file
+    print(f"Creating pokemon database: {db_file}")
+    create_pokemon_database(db_file)
+    return
+
+def list_pokemon_by_dex_UI(args):
+    dex_number = args.dex
+    db_file = args.db_file
+    if dex_number is not None:
+        print(f"Listing pokemon by dex: {dex_number} from {db_file}")
+    else:
+        print("Error: --dex argument is required for list-pokemon-by-dex")
+        
+    return
+
+def list_pokemon_by_id_UI(args):
+    id_number = args.id
+    db_file = args.db_file
+    if id_number is not None:
+        print(f"Listing pokemon by id: {id_number} from {db_file}")
+    else:
+        print("Error: --id argument is required for list-pokemon-by-id")
+    return
+
 def main(argv):
     """Main function for the Winona CLI tool."""
+    actions = {
+        "create-user-db": create_user_database_UI,
+        "create-pokemon-db": create_pokemon_database_UI,
+        "list-pokemon-by-dex": list_pokemon_by_dex_UI,
+        "list-pokemon-by-id": list_pokemon_by_id_UI,
+        "list-users": None,
+    }
+
     args = parse_arguments(argv)
-
     action = args.action
-    db_file = args.db_file
-    dex_number = args.dex
-    id_number = args.id
-
-    print(f"Action: {action}")
-    print(f"Database file: {db_file}")
-
-    if action == "create-user-db":
-        # Your create user database logic here
-        print(f"Creating user database: {db_file}")
-        create_user_database(db_file)
-    elif action == "create-pokemon-db":
-        # Your create pokemon database logic here
-        print(f"Creating pokemon database: {db_file}")
-        create_pokemon_database(db_file)
-    elif action == "list-pokemon-by-dex":
-        # Your list pokemon by dex logic here
-        if dex_number is not None:
-            print(f"Listing pokemon by dex: {dex_number} from {db_file}")
+    
+    if action in actions:
+        func = actions[action]
+        if func:
+            func(args)
         else:
-            print("Error: --dex argument is required for list-pokemon-by-dex")
-    elif action == "list-pokemon-by-id":
-        # Your list pokemon by id logic here
-        if id_number is not None:
-            print(f"Listing pokemon by id: {id_number} from {db_file}")
-        else:
-            print("Error: --id argument is required for list-pokemon-by-id")
+            print(f"Command: {action} is not implemented yet.")
     else:
-        print("Invalid action.")
+        print(f"Command: {action} is not available.")
+
+    return
+
 
 if __name__ == "__main__":
     main(sys.argv[1:]) # Pass sys.argv[1:] to main()
