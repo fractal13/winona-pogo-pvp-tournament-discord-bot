@@ -5,9 +5,35 @@ import os
 import dotenv
 import atexit
 
+import argparse
+import sys
+
+from ..database import DatabaseManager
+
+
+def parse_arguments(argv):
+    """Parses command-line arguments."""
+    parser = argparse.ArgumentParser(description="Winona Bot")
+
+    parser.add_argument(
+        "--db-file",
+        help="Database filename",
+        default="winona.db"
+    )
+
+    return parser.parse_args(argv)
 
 class WinonaBot:
-    def __init__(self):
+    def __init__(self, args=None):
+        if args is not None:
+            db_file = args.db_file
+            if os.path.exists(db_file):
+                self.db_manager = DatabaseManager(db_file)
+            else:
+                raise Exception(f"{db_file} does not exist.")
+        else:
+            self.db_manager = None
+
         dotenv.load_dotenv()
         self.TOKEN = os.getenv("BOT_TOKEN")
         self.GUILD_ID = int(os.getenv("GUILD_ID"))
@@ -27,6 +53,8 @@ class WinonaBot:
         self.client.load_extension("winona.bot.commands.list_roles_command")
         self.client.load_extension("winona.bot.commands.tournament_command")
         self.client.load_extension("winona.bot.commands.reload_command")
+        self.client.load_extension("winona.bot.commands.list_users_command")
+
 
         atexit.register(self.cleanup)
 
@@ -45,10 +73,11 @@ class WinonaBot:
         self.client.start()
         return
 
-def main():
-    bot = WinonaBot()
+def main(argv):
+    args = parse_arguments(argv)
+    bot = WinonaBot(args)
     bot.run()
     return
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

@@ -24,6 +24,7 @@ class ReloadCommand(interactions.Extension):
             interactions.SlashCommandChoice(name="list_roles", value="list_roles_command"),
             interactions.SlashCommandChoice(name="tournament", value="tournament_command"),
             interactions.SlashCommandChoice(name="reload", value="reload_command"),
+            interactions.SlashCommandChoice(name="users", value="list_users_command"),
         ],
     )
     async def reload_command(self, ctx: interactions.SlashContext, extension: str):

@@ -3,9 +3,13 @@
 import sqlite3
 import sys
 
+import sqlite3
+from typing import List, Optional
+from ..database.models.user import User
+
 class DatabaseManager:
     """
-    A class to manage database interactions using SQLite3.
+    A class to manage database interactions for all models using SQLite3.
     """
 
     def __init__(self, db_file):
@@ -17,7 +21,6 @@ class DatabaseManager:
         """
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
-        return
 
     def execute(self, sql, params=()):
         """
@@ -26,38 +29,35 @@ class DatabaseManager:
         Args:
             sql (str): The SQL statement to execute.
             params (tuple): A tuple of parameters to substitute into the SQL statement.
-
-        Returns:
-            A list of rows returned by the query, if any.
         """
         self.cursor.execute(sql, params)
         self.conn.commit()
-        return self.cursor.fetchall()
+        return
 
-    def fetchone(self, sql, params=()):
+    def fetchone(self, sql: str, params: tuple = ()) -> Optional[tuple]:
         """
-        Executes an SQL statement and returns the first row.
+        Executes an SQL statement and returns the first row as a tuple.
 
         Args:
             sql (str): The SQL statement to execute.
             params (tuple): A tuple of parameters to substitute into the SQL statement.
 
         Returns:
-            The first row returned by the query, or None if no rows are found.
+            The first row as a tuple, or None if no rows are found.
         """
         self.cursor.execute(sql, params)
         return self.cursor.fetchone()
 
-    def fetchall(self, sql, params=()):
+    def fetchall(self, sql: str, params: tuple = ()) -> List[tuple]:
         """
-        Executes an SQL statement and returns the all rows.
+        Executes an SQL statement and returns all rows as a list of tuples.
 
         Args:
             sql (str): The SQL statement to execute.
             params (tuple): A tuple of parameters to substitute into the SQL statement.
 
         Returns:
-            A list of rows returned by the query, or empty list if no rows are found.
+            A list of tuples, or an empty list if no rows are found.
         """
         self.cursor.execute(sql, params)
         return self.cursor.fetchall()
@@ -79,6 +79,130 @@ class DatabaseManager:
         """
         self.conn.close()
         return
+
+    # User-specific database operations
+    def _map_user(self, row: tuple) -> Optional[User]:
+        """
+        Helper method to map a database row to a User object.
+        """
+        if row:
+            return User(
+                user_id=row[0],
+                discord_name=row[1],
+                discord_name_in_server=row[2],
+                discord_id=row[3],
+                pogo_trainer_name=row[4],
+                pogo_trainer_code=row[5],
+                timezone=row[6]
+            )
+        return None
+
+    def create_user(self, user: User):
+        """
+        Creates a new user in the database.
+
+        Args:
+            user (User): The User object to create.
+        """
+        sql = """
+        INSERT INTO users (discord_name, discord_name_in_server, discord_id,
+                            pogo_trainer_name, pogo_trainer_code, timezone)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """
+        params = (user.discord_name, user.discord_name_in_server, user.discord_id,
+                  user.pogo_trainer_name, user.pogo_trainer_code, user.timezone)
+        self.execute(sql, params)
+        user.user_id = self.cursor.lastrowid  # Update the User object with the new ID
+        return
+
+
+    def get_user_by_id(self, user_id: int) -> Optional[User]:
+        """
+        Retrieves a User object from the database by ID.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            A User object if found, otherwise None.
+        """
+        sql = "SELECT id, discord_name, discord_name_in_server, discord_id, pogo_trainer_name, pogo_trainer_code, timezone FROM users WHERE id = ?"
+        row = self.fetchone(sql, (user_id,))
+        return self._map_user(row)
+
+    def get_user_by_discord_id(self, discord_id: int) -> Optional[User]:
+        """
+        Retrieves a User object from the database by Discord ID.
+
+        Args:
+            discord_id (int): The Discord ID of the user.
+
+        Returns:
+            A User object if found, otherwise None.
+        """
+        sql = "SELECT id, discord_name, discord_name_in_server, discord_id, pogo_trainer_name, pogo_trainer_code, timezone FROM users WHERE discord_id = ?"
+        row = self.fetchone(sql, (discord_id,))
+        return self._map_user(row)
+
+    def get_all_users(self) -> List[User]:
+        """
+        Retrieves all users from the database.
+
+        Returns:
+            A list of User objects.
+        """
+        sql = "SELECT id, discord_name, discord_name_in_server, discord_id, pogo_trainer_name, pogo_trainer_code, timezone FROM users"
+        rows = self.fetchall(sql)
+        return [self._map_user(row) for row in rows]
+
+    def update_user(self, user: User):
+        """
+        Updates an existing user in the database.
+
+        Args:
+            user (User): The User object to update.
+        """
+        sql = """
+        UPDATE users
+        SET discord_name = ?, discord_name_in_server = ?, discord_id = ?,
+            pogo_trainer_name = ?, pogo_trainer_code = ?, timezone = ?
+        WHERE id = ?
+        """
+        params = (user.discord_name, user.discord_name_in_server, user.discord_id,
+                  user.pogo_trainer_name, user.pogo_trainer_code, user.timezone,
+                  user.user_id)
+        self.execute(sql, params)
+        return
+
+    def delete_user(self, user_id: int):
+        """
+        Deletes a user from the database by ID.
+
+        Args:
+            user_id (int): The ID of the user to delete.
+        """
+        sql = "DELETE FROM users WHERE id = ?"
+        self.execute(sql, (user_id,))
+        return
+
+    def create_users_table(self):
+        """
+        Creates the 'users' table in the database.
+        """
+        create_table_sql = """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            discord_name TEXT NOT NULL,
+            discord_name_in_server TEXT,
+            discord_id INTEGER UNIQUE NOT NULL,
+            pogo_trainer_name TEXT,
+            pogo_trainer_code TEXT,
+            timezone TEXT
+        );
+        """
+        self.execute(create_table_sql)
+        return
+
 
 def main(argv):
     db_manager = DatabaseManager("my_database.db")

@@ -6,8 +6,14 @@ from ..database.models.user import User
 
 
 def create_user_database(db_file):
+    """
+    Creates the 'users' table in the specified database file.
+
+    Args:
+        db_file (str): Path to the SQLite database file.
+    """
     db_manager = DatabaseManager(db_file)
-    User.create_users_table(db_manager)
+    db_manager.create_users_table()
     db_manager.close()
     return
 

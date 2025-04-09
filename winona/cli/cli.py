@@ -2,6 +2,8 @@
 
 from ..database import DatabaseManager
 from .create_user_database import create_user_database
+from .list_users import list_users
+from .add_user import add_user
 from .ingest_pokemon_list import create_pokemon_database
 
 import argparse
@@ -13,8 +15,8 @@ def parse_arguments(argv):
 
     parser.add_argument(
         "action",
-        choices=["create-user-db", "create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id",
-                 "list-users" ],
+        choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id",
+                 "create-user-db", "add-user", "list-users" ],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -33,6 +35,13 @@ def parse_arguments(argv):
         help="Pokemon id",
         type=int
     )
+
+    parser.add_argument("--discord-name", default="", help="User's Discord name")
+    parser.add_argument("--discord-nick", default="", help="User's Discord nickname in server")
+    parser.add_argument("--discord-id", default=0, type=int, help="User's Discord ID")
+    parser.add_argument("--pogo-name", default="", help="User's PoGo trainer name")
+    parser.add_argument("--pogo-code", default="", help="User's PoGo trainer code")
+    parser.add_argument("--timezone", default="", help="User's timezone")
 
     return parser.parse_args(argv)
 
@@ -67,19 +76,36 @@ def list_pokemon_by_id_UI(args):
         print("Error: --id argument is required for list-pokemon-by-id")
     return
 
+def list_users_UI(args):
+    db_file = args.db_file
+    list_users(db_file)
+    return
+
+
+def add_user_UI(args):
+    db_file = args.db_file
+    discord_name = args.discord_name
+    discord_nick = args.discord_nick
+    discord_id = args.discord_id
+    pogo_name = args.pogo_name
+    pogo_code = args.pogo_code
+    timezone = args.timezone
+    add_user(db_file, discord_name, discord_nick, discord_id, pogo_name, pogo_code, timezone)
+    return
+
 def main(argv):
     """Main function for the Winona CLI tool."""
+    args = parse_arguments(argv)
     actions = {
         "create-user-db": create_user_database_UI,
         "create-pokemon-db": create_pokemon_database_UI,
         "list-pokemon-by-dex": list_pokemon_by_dex_UI,
         "list-pokemon-by-id": list_pokemon_by_id_UI,
-        "list-users": None,
+        "list-users": list_users_UI,
+        "add-user": add_user_UI,
     }
-
-    args = parse_arguments(argv)
-    action = args.action
     
+    action = args.action
     if action in actions:
         func = actions[action]
         if func:
@@ -90,7 +116,6 @@ def main(argv):
         print(f"Command: {action} is not available.")
 
     return
-
 
 if __name__ == "__main__":
     main(sys.argv[1:]) # Pass sys.argv[1:] to main()
