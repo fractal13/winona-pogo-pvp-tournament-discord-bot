@@ -5,6 +5,7 @@ from .create_user_database import create_user_database
 from .list_users import list_users
 from .add_user import add_user
 from .ingest_pokemon_list import create_pokemon_database
+from .google_commands import display_draft_sheet
 
 import argparse
 import sys
@@ -16,7 +17,8 @@ def parse_arguments(argv):
     parser.add_argument(
         "action",
         choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id",
-                 "create-user-db", "add-user", "list-users" ],
+                 "create-user-db", "add-user", "list-users",
+                 "display-draft-sheet"],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -42,6 +44,8 @@ def parse_arguments(argv):
     parser.add_argument("--pogo-name", default="", help="User's PoGo trainer name")
     parser.add_argument("--pogo-code", default="", help="User's PoGo trainer code")
     parser.add_argument("--timezone", default="", help="User's timezone")
+
+    parser.add_argument("--draft-sheet-url", default="https://docs.google.com/spreadsheets/d/1IyUI18bP2hPjsvZhADDYe93q4QACJ97tpbn8P9CwNE0/edit?gid=0#gid=0", help="URL to google sheet with draft picks.")
 
     return parser.parse_args(argv)
 
@@ -93,6 +97,12 @@ def add_user_UI(args):
     add_user(db_file, discord_name, discord_nick, discord_id, pogo_name, pogo_code, timezone)
     return
 
+def display_draft_sheet_UI(args):
+    db_file = args.db_file
+    sheet_url = args.draft_sheet_url
+    display_draft_sheet(sheet_url)
+    return
+
 def main(argv):
     """Main function for the Winona CLI tool."""
     args = parse_arguments(argv)
@@ -103,6 +113,7 @@ def main(argv):
         "list-pokemon-by-id": list_pokemon_by_id_UI,
         "list-users": list_users_UI,
         "add-user": add_user_UI,
+        "display-draft-sheet": display_draft_sheet_UI,
     }
     
     action = args.action
