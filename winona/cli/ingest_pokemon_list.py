@@ -55,8 +55,8 @@ def insert_one(dex_entry_json, db_manager):
     form = get_form_from_name(dex_entry_json['speciesName'])
     shadow = is_shadow(dex_entry_json['speciesId']) # bool
     mega = is_mega(dex_entry_json['speciesId'])     # bool
-    species = PokemonSpecies(name=name, dex_number=dex_number, region=region, form=form, shadow=shadow, mega=mega, db_manager=db_manager)
-    species.save()
+    species = PokemonSpecies(name=name, dex_number=dex_number, region=region, form=form, shadow=shadow, mega=mega)
+    db_manager.create_pokemon_species(species)
     return
 
 def insert_all(data, db_manager):
@@ -69,11 +69,17 @@ def create_pokemon_database(db_file):
     source_json = "./external/pvpoke/src/data/gamemaster/pokemon.json"
     if not os.path.exists(source_json):
         raise FileNotFoundError(source_json)
-    db_manager = DatabaseManager(db_file) 
-    PokemonSpecies.create_pokemon_species_table(db_manager)
-    data = load_json(source_json)
-    insert_all(data, db_manager)
-    db_manager.close()
+    try:
+        db_manager = DatabaseManager(db_file) 
+        db_manager.create_pokemon_species_table()
+        # TODO: this needs a big warning, or something.
+        db_manager.clear_pokemon_species_table()
+        data = load_json(source_json)
+        insert_all(data, db_manager)
+    except Exception as e:
+        pass
+    finally:
+        db_manager.close()
     return
 
 def main(argv):

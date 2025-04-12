@@ -4,8 +4,9 @@ import sqlite3
 import sys
 
 import sqlite3
-from typing import List, Optional
-from ..database.models.user import User
+from typing import List, Optional, Tuple
+from .models.user import User
+from .models.pokemon_species import PokemonSpecies
 
 class DatabaseManager:
     """
@@ -21,6 +22,7 @@ class DatabaseManager:
         """
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
+        return
 
     def execute(self, sql, params=()):
         """
@@ -203,6 +205,153 @@ class DatabaseManager:
         self.execute(create_table_sql)
         return
 
+    # PokemonSpecies-specific database operations
+    def _map_pokemon_species(self, row: Optional[tuple]) -> Optional[PokemonSpecies]:
+        """
+        Helper method to map a database row to a PokemonSpecies object.
+        """
+        if row:
+            return PokemonSpecies(
+                species_id=row[0],
+                name=row[1],
+                dex_number=row[2],
+                region=row[3],
+                form=row[4],
+                shadow=bool(row[5]),
+                mega=bool(row[6]),
+            )
+        return
+
+    def create_pokemon_species(self, species: PokemonSpecies):
+        """
+        Creates a new Pokémon species in the database.
+
+        Args:
+            species (PokemonSpecies): The PokemonSpecies object to create.
+        """
+        sql = """
+        INSERT INTO pokemon_species (name, dex_number, region, form, shadow, mega)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """
+        params = (species.name, species.dex_number, species.region, species.form,
+                  species.shadow, species.mega)
+        self.execute(sql, params)
+        species.species_id = self.cursor.lastrowid  # Get the new ID
+        return
+
+    def get_pokemon_species_by_dex_number(self, dex_number: int) -> Optional[PokemonSpecies]:
+        """
+        Retrieves a PokemonSpecies object from the database by Dex number.
+
+        Args:
+            dex_number (int): The Pokédex number of the species.
+
+        Returns:
+            A PokemonSpecies object if found, otherwise None.
+        """
+        sql = "SELECT * FROM pokemon_species WHERE dex_number = ?"
+        row = self.fetchone(sql, (dex_number,))
+        return self._map_pokemon_species(row)
+
+    def get_pokemon_species_by_id(self, species_id: int) -> Optional[PokemonSpecies]:
+        """
+        Retrieves a PokemonSpecies object from the database by ID.
+
+        Args:
+            species_id (int): The ID of the species.
+
+        Returns:
+            A PokemonSpecies object if found, otherwise None.
+        """
+        sql = "SELECT * FROM pokemon_species WHERE id = ?"
+        row = self.fetchone(sql, (species_id,))
+        return self._map_pokemon_species(row)
+
+    def get_all_pokemon_species(self) -> List[PokemonSpecies]:
+        """
+        Retrieves all PokemonSpecies objects from the database.
+
+        Returns:
+            A list of PokemonSpecies objects.
+        """
+        sql = "SELECT * FROM pokemon_species"
+        rows = self.fetchall(sql)
+        return [self._map_pokemon_species(row) for row in rows]
+
+    def get_pokemon_species_dex_numbers(self) -> List[int]:
+        """
+        Retrieves all PokemonSpecies Dex numbers.
+
+        Returns:
+            A list of PokemonSpecies dex numbers.
+        """
+        sql = "SELECT dex_number FROM pokemon_species"
+        rows = self.fetchall(sql)
+        return [row[0] for row in rows]
+
+    def get_pokemon_species_ids(self) -> List[int]:
+        """
+        Retrieves all PokemonSpecies ID numbers.
+
+        Returns:
+            A list of PokemonSpecies id numbers.
+        """
+        sql = "SELECT id FROM pokemon_species"
+        rows = self.fetchall(sql)
+        return [row[0] for row in rows]
+
+    def update_pokemon_species(self, species: PokemonSpecies):
+        """
+        Updates an existing Pokémon species in the database.
+
+        Args:
+            species (PokemonSpecies): The PokemonSpecies object to update.
+        """
+        sql = """
+        UPDATE pokemon_species
+        SET name = ?, dex_number = ?, region = ?, form = ?, shadow = ?, mega = ?
+        WHERE id = ?
+        """
+        params = (species.name, species.dex_number, species.region, species.form,
+                  species.shadow, species.mega, species.species_id)
+        self.execute(sql, params)
+        return
+
+    def delete_pokemon_species(self, species_id: int):
+        """
+        Deletes a Pokémon species from the database by ID.
+        Args:
+            species_id:
+        """
+        sql = "DELETE FROM pokemon_species WHERE id = ?"
+        self.execute(sql, (species_id,))
+        return
+        
+    def create_pokemon_species_table(self):
+        """
+        Creates the 'pokemon_species' table in the database.
+        """
+        create_table_sql = """
+        CREATE TABLE IF NOT EXISTS pokemon_species (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            dex_number INTEGER NOT NULL,
+            region TEXT,
+            form TEXT,
+            shadow BOOLEAN DEFAULT 0,
+            mega BOOLEAN DEFAULT 0
+        );
+        """
+        self.execute(create_table_sql)
+        return
+       
+    def clear_pokemon_species_table(self):
+        """
+        Removes all rows from the 'pokemon_species' table.
+        """
+        sql = "DELETE FROM pokemon_species"
+        self.execute(sql)
+        return
 
 def main(argv):
     db_manager = DatabaseManager("my_database.db")

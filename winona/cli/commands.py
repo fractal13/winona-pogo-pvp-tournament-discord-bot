@@ -12,14 +12,18 @@ def list_all_by_dex_number(db_file):
     db_manager.close()
     return
 
-def list_all_by_id_number(db_file):
-    db_manager = DatabaseManager(db_file)
-    for id_number in PokemonSpecies.get_id_numbers(db_manager):
-        p = PokemonSpecies.get_by_id_number(id_number, db_manager)
-        print(id_number, p)
-    db_manager.close()
+def list_all_pokemon(db_file):
+    try:
+        db_manager = DatabaseManager(db_file)
+        for p in db_manager.get_all_pokemon_species():
+            print(p)
+    except FileNotFoundError:
+        print(f"Error: Database file not found at {db_file}")
+    except Exception as e:
+        print(f"An error occurred while listing users: {e}")
+    finally:
+        db_manager.close()
     return
-
 
 def main(argv):
     db_file = "my_database.db"

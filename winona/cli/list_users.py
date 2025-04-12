@@ -12,8 +12,8 @@ def list_users(db_file):
     Args:
         db_file (str): Path to the SQLite database file.
     """
-    db_manager = DatabaseManager(db_file)
     try:
+        db_manager = DatabaseManager(db_file)
         users = db_manager.get_all_users()
         if users:
             print("\n--- User List ---")
