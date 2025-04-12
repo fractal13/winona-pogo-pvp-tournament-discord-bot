@@ -6,6 +6,7 @@ from .list_users import list_users
 from .add_user import add_user
 from .ingest_pokemon_list import create_pokemon_database
 from .google_commands import display_draft_sheet
+from ..logic.sheet_validation import validate_draft_sheet
 
 import argparse
 import sys
@@ -18,7 +19,7 @@ def parse_arguments(argv):
         "action",
         choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id", "list-all-pokemon",
                  "create-user-db", "add-user", "list-users",
-                 "display-draft-sheet"],
+                 "display-draft-sheet", "validate-draft-sheet"],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -110,6 +111,12 @@ def display_draft_sheet_UI(args):
     display_draft_sheet(sheet_url)
     return
 
+def validate_draft_sheet_UI(args):
+    db_file = args.db_file
+    sheet_url = args.draft_sheet_url
+    validate_draft_sheet(db_file, sheet_url)
+    return
+
 def main(argv):
     """Main function for the Winona CLI tool."""
     args = parse_arguments(argv)
@@ -122,6 +129,7 @@ def main(argv):
         "list-users": list_users_UI,
         "add-user": add_user_UI,
         "display-draft-sheet": display_draft_sheet_UI,
+        "validate-draft-sheet": validate_draft_sheet_UI,
     }
     
     action = args.action
