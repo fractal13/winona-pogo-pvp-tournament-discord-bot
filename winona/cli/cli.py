@@ -16,7 +16,7 @@ def parse_arguments(argv):
 
     parser.add_argument(
         "action",
-        choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id",
+        choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id", "list-all-pokemon-by-id",
                  "create-user-db", "add-user", "list-users",
                  "display-draft-sheet"],
         help="Major action to perform"
@@ -80,6 +80,13 @@ def list_pokemon_by_id_UI(args):
         print("Error: --id argument is required for list-pokemon-by-id")
     return
 
+from .commands import list_all_by_id_number 
+
+def list_all_pokemon_by_id_UI(args):
+    db_file = args.db_file
+    list_all_by_id_number(db_file)
+    return
+
 def list_users_UI(args):
     db_file = args.db_file
     list_users(db_file)
@@ -111,6 +118,7 @@ def main(argv):
         "create-pokemon-db": create_pokemon_database_UI,
         "list-pokemon-by-dex": list_pokemon_by_dex_UI,
         "list-pokemon-by-id": list_pokemon_by_id_UI,
+        "list-all-pokemon-by-id": list_all_pokemon_by_id_UI,
         "list-users": list_users_UI,
         "add-user": add_user_UI,
         "display-draft-sheet": display_draft_sheet_UI,
