@@ -2,7 +2,7 @@
 
 import interactions
 from .checks import admin_channel_check
-from ...logic.sheet_validation import validate_draft_sheet_aux
+from ...logic.sheet_validation import validate_draft_sheet_aux, parse_bans_aux
 from ...api import read_public_google_sheet
 
 class SpreadsheetCommands(interactions.Extension):
@@ -26,12 +26,15 @@ class SpreadsheetCommands(interactions.Extension):
         sheet_url = ctx.client.winona.sheet_url
         db_manager = ctx.client.winona.db_manager
         sheet_df = read_public_google_sheet(sheet_url)
+        ban_messages, all_bans_by_name = parse_bans_aux(db_manager, sheet_df)
         messages = validate_draft_sheet_aux(db_manager, sheet_df)
 
         embed = interactions.Embed(title="Issues", color=0x00FF00)
-        if len(messages) == 0:
+        if len(messages) == 0 and len(ban_messages) == 0:
             pass
         else:
+            for message in ban_messages:
+                embed.add_field(name=f"MSG:", value=f"Info: {message}", inline=False)
             for message in messages:
                 embed.add_field(name=f"MSG:", value=f"Info: {message}", inline=False)
 

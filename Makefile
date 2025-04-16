@@ -13,4 +13,6 @@ install-deb:
 install-pip: $(VENV)
 	. $(VENV)/bin/activate; pip3 install -U -r requirements.txt
 
+launch-bot:
+	. $(VENV)/bin/activate; ./main.py bot
 

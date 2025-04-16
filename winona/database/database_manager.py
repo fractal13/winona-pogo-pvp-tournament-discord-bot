@@ -32,8 +32,12 @@ class DatabaseManager:
             sql (str): The SQL statement to execute.
             params (tuple): A tuple of parameters to substitute into the SQL statement.
         """
-        self.cursor.execute(sql, params)
-        self.conn.commit()
+        try:
+            self.cursor.execute(sql, params)
+            self.conn.commit()
+        except Exception as e:
+            print(e)
+            print(sql, params)
         return
 
     def fetchone(self, sql: str, params: tuple = ()) -> Optional[tuple]:
@@ -214,11 +218,12 @@ class DatabaseManager:
             return PokemonSpecies(
                 species_id=row[0],
                 name=row[1],
-                dex_number=row[2],
-                region=row[3],
-                form=row[4],
-                shadow=bool(row[5]),
-                mega=bool(row[6]),
+                species_id_str=row[2],
+                dex_number=row[3],
+                region=row[4],
+                form=row[5],
+                shadow=bool(row[6]),
+                mega=bool(row[7]),
             )
         return
 
@@ -230,10 +235,10 @@ class DatabaseManager:
             species (PokemonSpecies): The PokemonSpecies object to create.
         """
         sql = """
-        INSERT INTO pokemon_species (name, dex_number, region, form, shadow, mega)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO pokemon_species (name, species_id_str, dex_number, region, form, shadow, mega)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
-        params = (species.name, species.dex_number, species.region, species.form,
+        params = (species.name, species.species_id_str, species.dex_number, species.region, species.form,
                   species.shadow, species.mega)
         self.execute(sql, params)
         species.species_id = self.cursor.lastrowid  # Get the new ID
@@ -309,10 +314,10 @@ class DatabaseManager:
         """
         sql = """
         UPDATE pokemon_species
-        SET name = ?, dex_number = ?, region = ?, form = ?, shadow = ?, mega = ?
+        SET name = ?, species_id_str = ?, dex_number = ?, region = ?, form = ?, shadow = ?, mega = ?
         WHERE id = ?
         """
-        params = (species.name, species.dex_number, species.region, species.form,
+        params = (species.name, species.species_id_str, species.dex_number, species.region, species.form,
                   species.shadow, species.mega, species.species_id)
         self.execute(sql, params)
         return
@@ -335,6 +340,7 @@ class DatabaseManager:
         CREATE TABLE IF NOT EXISTS pokemon_species (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
+            species_id_str TEXT NOT NULL,
             dex_number INTEGER NOT NULL,
             region TEXT,
             form TEXT,
@@ -350,6 +356,14 @@ class DatabaseManager:
         Removes all rows from the 'pokemon_species' table.
         """
         sql = "DELETE FROM pokemon_species"
+        self.execute(sql)
+        return
+
+    def drop_pokemon_species_table(self):
+        """
+        Removes the pokemon_species table.
+        """
+        sql = "DROP TABLE IF EXISTS pokemon_species"
         self.execute(sql)
         return
 

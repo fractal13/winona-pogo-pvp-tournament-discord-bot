@@ -9,6 +9,7 @@ class PokemonSpecies:
 
     def __init__(self,
                  name: str,
+                 species_id_str: str,
                  dex_number: int,
                  region: Optional[str] = None,
                  form: Optional[str] = None,
@@ -20,6 +21,7 @@ class PokemonSpecies:
 
         Args:
             name (str): The name of the Pokémon species.
+            species_id_str (str): The unique string identifier for the species.
             dex_number (int): The Pokédex number of the species.
             region (str, optional): The region where the Pokémon was first introduced.
                                         Defaults to None.
@@ -32,6 +34,7 @@ class PokemonSpecies:
                                         Defaults to None.
         """
         self.name = name
+        self.species_id_str = species_id_str
         self.dex_number = dex_number
         self.region = region
         self.form = form
@@ -44,7 +47,7 @@ class PokemonSpecies:
         """
         Returns a string representation of the PokemonSpecies object.
         """
-        return f"<PokemonSpecies name='{self.name}' dex_number='{self.dex_number}'>"
+        return f"<PokemonSpecies name='{self.name}' species_id='{self.species_id_str}' dex_number='{self.dex_number}'>"
 
     def __str__(self):
         """
@@ -59,4 +62,5 @@ class PokemonSpecies:
             species_str += " - Shadow"
         if self.mega:
             species_str += " - Mega"
+        species_str += f" ({self.species_id_str})"
         return species_str
