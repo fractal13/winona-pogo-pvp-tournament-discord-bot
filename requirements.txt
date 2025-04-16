@@ -3,3 +3,4 @@ pysqlite3
 discord-py-interactions
 python-dotenv
 pandas
+rapidfuzz

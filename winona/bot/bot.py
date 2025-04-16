@@ -9,7 +9,7 @@ import argparse
 import sys
 
 from ..database import DatabaseManager
-
+from ..cli.cli import g_sheet_url
 
 def parse_arguments(argv):
     """Parses command-line arguments."""
@@ -33,6 +33,7 @@ class WinonaBot:
                 raise Exception(f"{db_file} does not exist.")
         else:
             self.db_manager = None
+        self.sheet_url = g_sheet_url
 
         dotenv.load_dotenv()
         self.TOKEN = os.getenv("BOT_TOKEN")
@@ -54,6 +55,7 @@ class WinonaBot:
         self.client.load_extension("winona.bot.commands.tournament_command")
         self.client.load_extension("winona.bot.commands.reload_command")
         self.client.load_extension("winona.bot.commands.list_users_command")
+        self.client.load_extension("winona.bot.commands.spreadsheet_commands")
 
 
         atexit.register(self.cleanup)

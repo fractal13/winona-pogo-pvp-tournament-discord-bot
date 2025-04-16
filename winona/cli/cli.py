@@ -11,6 +11,8 @@ from ..logic.sheet_validation import validate_draft_sheet
 import argparse
 import sys
 
+g_sheet_url = "https://docs.google.com/spreadsheets/d/1IyUI18bP2hPjsvZhADDYe93q4QACJ97tpbn8P9CwNE0/edit?gid=0#gid=0"
+
 def parse_arguments(argv):
     """Parses command-line arguments."""
     parser = argparse.ArgumentParser(description="Winona CLI Tool")
@@ -46,7 +48,7 @@ def parse_arguments(argv):
     parser.add_argument("--pogo-code", default="", help="User's PoGo trainer code")
     parser.add_argument("--timezone", default="", help="User's timezone")
 
-    parser.add_argument("--draft-sheet-url", default="https://docs.google.com/spreadsheets/d/1IyUI18bP2hPjsvZhADDYe93q4QACJ97tpbn8P9CwNE0/edit?gid=0#gid=0", help="URL to google sheet with draft picks.")
+    parser.add_argument("--draft-sheet-url", default=g_sheet_url, help="URL to google sheet with draft picks.")
 
     return parser.parse_args(argv)
 
