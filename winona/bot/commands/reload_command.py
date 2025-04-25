@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import interactions
+from .checks import admin_channel_check
 
 class ReloadCommand(interactions.Extension):
     def __init__(self, client):
@@ -28,6 +29,7 @@ class ReloadCommand(interactions.Extension):
             interactions.SlashCommandChoice(name="spreadsheet", value="spreadsheet_commands"),
         ],
     )
+    @interactions.check(admin_channel_check)
     async def reload_command(self, ctx: interactions.SlashContext, extension: str):
         try:
             self.client.reload_extension("winona.bot.commands."+extension)

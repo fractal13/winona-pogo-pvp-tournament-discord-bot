@@ -23,6 +23,28 @@ def parse_arguments(argv):
 
     return parser.parse_args(argv)
 
+def getenv_int(token):
+    s = os.getenv(token)
+    i = -1
+    try:
+        i = int(s)
+    except:
+        pass
+    return i
+
+def getenv_int_list(token):
+    strings = os.getenv(token)
+    numbers = []
+    for s in strings.split(','):
+        i = -1
+        try:
+            i = int(s)
+        except:
+            pass
+        if i != -1:
+            numbers.append(i)
+    return numbers
+
 class WinonaBot:
     def __init__(self, args=None):
         if args is not None:
@@ -37,10 +59,10 @@ class WinonaBot:
 
         dotenv.load_dotenv()
         self.TOKEN = os.getenv("BOT_TOKEN")
-        self.GUILD_ID = int(os.getenv("GUILD_ID"))
-        self.ROLE_ID = int(os.getenv("ROLE_ID"))
-        self.ADMIN_CHANNEL_ID = int(os.getenv("ADMIN_CHANNEL_ID"))
-        self.DEBUG_GUILD_ID = int(os.getenv("DEBUG_GUILD_ID"))
+        self.GUILD_ID = getenv_int_list("GUILD_ID")
+        self.ROLE_ID = getenv_int("ROLE_ID")
+        self.ADMIN_CHANNEL_IDS = getenv_int_list("ADMIN_CHANNEL_ID")
+        self.DEBUG_GUILD_ID = getenv_int("DEBUG_GUILD_ID")
 
         if self.DEBUG_GUILD_ID:
             self.client = interactions.Client(token=self.TOKEN, debug_scope=self.DEBUG_GUILD_ID)
@@ -63,6 +85,12 @@ class WinonaBot:
         @self.client.listen()
         async def on_ready():
             print("Bot is ready!")
+            print(f'Bot is ready! Logged in as {self.client.user}')
+            print('-------------------------')
+            print('Currently in these servers:')
+            for guild in self.client.guilds:
+                print(f'- {guild.name} (ID: {guild.id})')
+            print('-------------------------')
             return
         return
 

@@ -15,6 +15,7 @@ class ListRolesCommands(interactions.Extension):
         sub_cmd_name="list-roles",
         sub_cmd_description="Lists all visible roles in the guild.",
     )
+    @interactions.check(admin_channel_check)
     async def list_roles(self, ctx: interactions.SlashContext):
         if ctx.guild is None:
             await ctx.send("This command can only be used in a server.")

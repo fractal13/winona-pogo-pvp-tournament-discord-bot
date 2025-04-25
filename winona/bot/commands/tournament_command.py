@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import interactions
+from .checks import admin_channel_check
 
 class TournamentCommand(interactions.Extension):
     def __init__(self, client):
@@ -27,6 +28,7 @@ class TournamentCommand(interactions.Extension):
         opt_type=interactions.OptionType.INTEGER,
         required=True,
     )
+    @interactions.check(admin_channel_check)
     async def tournament_create(self, ctx: interactions.SlashContext, name: str, players: int):
         tournament_id = len(self.tournaments) + 1
         self.tournaments[tournament_id] = {
@@ -50,6 +52,7 @@ class TournamentCommand(interactions.Extension):
         sub_cmd_name="list",
         sub_cmd_description="List current tournaments.",
     )
+    @interactions.check(admin_channel_check)
     async def tournament_list(self, ctx: interactions.SlashContext):
         if not self.tournaments:
             await ctx.send("There are no active tournaments.")

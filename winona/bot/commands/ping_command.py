@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import interactions
+from .checks import admin_channel_check
 
 class PingCommand(interactions.Extension):
     def __init__(self, client):
