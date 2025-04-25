@@ -200,13 +200,19 @@ def main(argv):
     """Main function for the Winona CLI tool."""
     args = parse_arguments(argv)
     actions = {
-        "create-user-db": create_user_database_UI,
+        # POKEMON-START
         "create-pokemon-db": create_pokemon_database_UI,
         "list-pokemon-by-dex": list_pokemon_by_dex_UI,
         "list-pokemon-by-id": list_pokemon_by_id_UI,
         "list-all-pokemon": list_all_pokemon_UI,
+        # POKEMON-END
+        #
+        # USER-START
+        "create-user-db": create_user_database_UI,
         "list-users": list_users_UI,
         "add-user": add_user_UI,
+        # USER-END
+        #
         # GUILD-START
         "create-guild-db": create_guild_database_UI,
         "add-guild": add_guild_UI,
@@ -216,11 +222,17 @@ def main(argv):
         "add-tournament-channel-id": add_guild_tournament_channel_id_UI,
         "remove-tournament-channel-id": remove_guild_tournament_channel_id_UI,
         # GUILD-END
+        #
+        # GOOGLE-SHEET-START
         "display-draft-sheet": display_draft_sheet_UI,
         "validate-draft-sheet": validate_draft_sheet_UI,
         "show-player-picks": show_player_picks_UI,
         "parse-bans": parse_bans_UI,
+        # GOOGLE-SHEET-END
+        #
+        # DRACOVIZ-START
         "show-dracoviz-data": show_dracoviz_data_UI,
+        # DRACOVIZ-END
     }
     
     action = args.action
