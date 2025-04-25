@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 from ..database import DatabaseManager
 from .create_user_database import create_user_database
 from .list_users import list_users
@@ -10,6 +11,7 @@ from ..logic.sheet_validation import validate_draft_sheet
 from ..logic.sheet_validation import parse_bans
 from ..logic.sheet_validation import show_player_picks
 from ..logic.dracoviz_io import read_dracoviz_data
+from .guild_commands import create_guild_database, add_guild, remove_guild, list_guilds, set_guild_admin_channel_id, add_guild_tournament_channel_id, remove_guild_tournament_channel_id
 
 import argparse
 import sys
@@ -24,6 +26,7 @@ def parse_arguments(argv):
         "action",
         choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id", "list-all-pokemon",
                  "create-user-db", "add-user", "list-users",
+                 "create-guild-db", "add-guild", "remove-guild", "list-guilds", "set-admin-channel-id", "add-tournament-channel-id", "remove-tournament-channel-id",
                  "display-draft-sheet", "validate-draft-sheet", "parse-bans",
                  "show-player-picks",
                  "show-dracoviz-data"],
@@ -56,6 +59,10 @@ def parse_arguments(argv):
     parser.add_argument("--draft-sheet-url", default=g_sheet_url, help="URL to google sheet with draft picks.")
     parser.add_argument("--player-name", default="", help="Player's name in the sheet")
     parser.add_argument("--filename", default="", help="Filename to operate on")
+
+    parser.add_argument("--guild-name", default="", type=str, help="Guild's Discord name")
+    parser.add_argument("--guild-id", default=-1, type=int, help="Guild's Discord id")
+    parser.add_argument("--channel-id", default=-1, type=int, help="Channel's Discord id")
 
     return parser.parse_args(argv)
 
@@ -145,6 +152,50 @@ def show_dracoviz_data_UI(args):
     return
 
 
+def create_guild_database_UI(args):
+    db_file = args.db_file
+    create_guild_database(db_file)
+    return
+
+def add_guild_UI(args):
+    db_file = args.db_file
+    guild_name = args.guild_name
+    guild_id = args.guild_id
+    add_guild(db_file, guild_id, guild_name)
+    return
+
+def remove_guild_UI(args):
+    db_file = args.db_file
+    guild_id = args.guild_id
+    remove_guild(db_file, guild_id)
+    return
+
+def list_guilds_UI(args):
+    db_file = args.db_file
+    list_guilds(db_file)
+    return
+
+def set_guild_admin_channel_id_UI(args):
+    db_file = args.db_file
+    guild_id = args.guild_id
+    admin_channel_id = args.channel_id
+    set_guild_admin_channel_id(db_file, guild_id, admin_channel_id)
+    return
+
+def add_guild_tournament_channel_id_UI(args):
+    db_file = args.db_file
+    guild_id = args.guild_id
+    channel_id = args.channel_id
+    add_guild_tournament_channel_id(db_file, guild_id, channel_id)
+    return
+
+def remove_guild_tournament_channel_id_UI(args):
+    db_file = args.db_file
+    guild_id = args.guild_id
+    channel_id = args.channel_id
+    remove_guild_tournament_channel_id(db_file, guild_id, channel_id)
+    return
+
 def main(argv):
     """Main function for the Winona CLI tool."""
     args = parse_arguments(argv)
@@ -156,6 +207,15 @@ def main(argv):
         "list-all-pokemon": list_all_pokemon_UI,
         "list-users": list_users_UI,
         "add-user": add_user_UI,
+        # GUILD-START
+        "create-guild-db": create_guild_database_UI,
+        "add-guild": add_guild_UI,
+        "remove-guild": remove_guild_UI,
+        "list-guilds": list_guilds_UI,
+        "set-admin-channel-id": set_guild_admin_channel_id_UI,
+        "add-tournament-channel-id": add_guild_tournament_channel_id_UI,
+        "remove-tournament-channel-id": remove_guild_tournament_channel_id_UI,
+        # GUILD-END
         "display-draft-sheet": display_draft_sheet_UI,
         "validate-draft-sheet": validate_draft_sheet_UI,
         "show-player-picks": show_player_picks_UI,

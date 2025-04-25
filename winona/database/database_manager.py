@@ -7,6 +7,7 @@ import sqlite3
 from typing import List, Optional, Tuple
 from .models.user import User
 from .models.pokemon_species import PokemonSpecies
+from .models.guild import Guild
 
 class DatabaseManager:
     """
@@ -75,8 +76,7 @@ class DatabaseManager:
         Args:
             create_table_sql (str): The SQL statement to create the table.
         """
-        self.cursor.execute(create_table_sql)
-        self.conn.commit()
+        self.execute(create_table_sql)
         return
 
     def close(self):
@@ -206,7 +206,7 @@ class DatabaseManager:
             timezone TEXT
         );
         """
-        self.execute(create_table_sql)
+        self.create_table(create_table_sql)
         return
 
     # PokemonSpecies-specific database operations
@@ -348,7 +348,7 @@ class DatabaseManager:
             mega BOOLEAN DEFAULT 0
         );
         """
-        self.execute(create_table_sql)
+        self.create_table(create_table_sql)
         return
        
     def clear_pokemon_species_table(self):
@@ -366,6 +366,86 @@ class DatabaseManager:
         sql = "DROP TABLE IF EXISTS pokemon_species"
         self.execute(sql)
         return
+
+
+    # Guild-specific database operations
+    def _map_guild(self, row: Optional[tuple]) -> Optional[Guild]:
+        """
+        Helper method to map a database row to a Guild object.
+        """
+        if row:
+            return Guild(
+                guild_id=row[0],
+                admin_channel_id=row[1],
+                tournament_channel_ids=eval(row[2]),  # Convert string representation of list back to list
+                guild_name=row[3]
+            )
+        return None
+
+    def create_guild_table(self):
+        """
+        Creates the 'guilds' table in the database.
+        """
+        create_table_sql = """
+        CREATE TABLE IF NOT EXISTS guilds (
+            guild_id INTEGER PRIMARY KEY,  -- Discord's guild ID (unique)
+            admin_channel_id INTEGER NOT NULL,
+            tournament_channel_ids TEXT NOT NULL,  -- Stored as a string representation of a Python list
+            guild_name TEXT
+        );
+        """
+        self.create_table(create_table_sql)
+        return
+
+    def create_guild(self, guild: Guild):
+        """
+        Creates a new guild record in the database.
+        """
+        sql = """
+        INSERT INTO guilds (guild_id, admin_channel_id, tournament_channel_ids, guild_name)
+        VALUES (?, ?, ?, ?)
+        """
+        params = (guild.guild_id, guild.admin_channel_id, str(guild.tournament_channel_ids), guild.guild_name) # Store list as string
+        self.execute(sql, params)
+        return
+
+    def get_guild_by_id(self, guild_id: int) -> Optional[Guild]:
+        """
+        Retrieves a guild from the database by its guild_id.
+        """
+        sql = "SELECT * FROM guilds WHERE guild_id = ?"
+        row = self.fetchone(sql, (guild_id,))
+        return self._map_guild(row)
+
+    def update_guild(self, guild: Guild):
+        """
+        Updates an existing guild record in the database.
+        """
+        sql = """
+        UPDATE guilds
+        SET admin_channel_id = ?, tournament_channel_ids = ?, guild_name = ?
+        WHERE guild_id = ?
+        """
+        params = (guild.admin_channel_id, str(guild.tournament_channel_ids), guild.guild_name, guild.guild_id)
+        self.execute(sql, params)
+        return
+
+    def delete_guild(self, guild_id: int):
+        """
+        Deletes a guild from the database by its guild_id.
+        """
+        sql = "DELETE FROM guilds WHERE guild_id = ?"
+        self.execute(sql, (guild_id,))
+        return
+
+    def get_all_guilds(self) -> List[Guild]:
+        """
+        Retrieves all guilds from the database.
+        """
+        sql = "SELECT * FROM guilds"
+        rows = self.fetchall(sql)
+        return [self._map_guild(row) for row in rows]    
+
 
 def main(argv):
     db_manager = DatabaseManager("my_database.db")
