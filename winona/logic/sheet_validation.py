@@ -5,6 +5,19 @@ import pandas as pd
 
 import rapidfuzz
 
+def parse_picks_aux(sheet_df):
+    users = sheet_df["Trainer"]
+    all_picks = {}
+    messages = []
+    for column in ["PICK 1", "PICK 2", "PICK 3", "PICK 4", "PICK 5", "PICK 6"]:
+        for index, value in sheet_df[column].items():
+            if pd.isna(value):
+                continue
+            else:
+                all_picks[value] = [index, users[index], column]
+    users = [ u for index, u in users.items() ]
+    return all_picks, users
+
 def fuzz_choice(possible, choices):
     return rapidfuzz.process.extractOne(possible, choices, scorer=rapidfuzz.fuzz.token_sort_ratio)
 
@@ -156,4 +169,28 @@ def parse_bans(db_file, sheet_url):
     finally:
         db_manager.close()
     
+    return
+
+def show_player_picks(db_file, sheet_url, player_name):
+    sheet_df = read_public_google_sheet(sheet_url)
+    all_picks, users = parse_picks_aux(sheet_df)
+    messages = []
+    if player_name in users:
+        msg = f"{player_name}: "
+        messages.append(msg)
+        for key in all_picks:
+            item = all_picks[key]
+            if item[1] == player_name:
+                msg = f"'{key}'"
+                messages.append(msg)
+        messages = [ " ".join(messages) ]
+    else:
+        msg = f"Player '{player_name}' is not in the list."
+        messages.append(msg)
+        msg = "'{}'".format("' '".join(users))
+        messages.append(msg)
+
+    for msg in messages:
+        print(msg)
+
     return

@@ -8,6 +8,8 @@ from .ingest_pokemon_list import create_pokemon_database
 from .google_commands import display_draft_sheet
 from ..logic.sheet_validation import validate_draft_sheet
 from ..logic.sheet_validation import parse_bans
+from ..logic.sheet_validation import show_player_picks
+from ..logic.dracoviz_io import read_dracoviz_data
 
 import argparse
 import sys
@@ -22,7 +24,9 @@ def parse_arguments(argv):
         "action",
         choices=["create-pokemon-db", "list-pokemon-by-dex", "list-pokemon-by-id", "list-all-pokemon",
                  "create-user-db", "add-user", "list-users",
-                 "display-draft-sheet", "validate-draft-sheet", "parse-bans"],
+                 "display-draft-sheet", "validate-draft-sheet", "parse-bans",
+                 "show-player-picks",
+                 "show-dracoviz-data"],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -50,6 +54,8 @@ def parse_arguments(argv):
     parser.add_argument("--timezone", default="", help="User's timezone")
 
     parser.add_argument("--draft-sheet-url", default=g_sheet_url, help="URL to google sheet with draft picks.")
+    parser.add_argument("--player-name", default="", help="Player's name in the sheet")
+    parser.add_argument("--filename", default="", help="Filename to operate on")
 
     return parser.parse_args(argv)
 
@@ -120,10 +126,22 @@ def validate_draft_sheet_UI(args):
     validate_draft_sheet(db_file, sheet_url)
     return
 
+def show_player_picks_UI(args):
+    db_file = args.db_file
+    sheet_url = args.draft_sheet_url
+    player_name = args.player_name
+    show_player_picks(db_file, sheet_url, player_name)
+    return
+
 def parse_bans_UI(args):
     db_file = args.db_file
     sheet_url = args.draft_sheet_url
     parse_bans(db_file, sheet_url)
+    return
+
+def show_dracoviz_data_UI(args):
+    filename = args.filename
+    read_dracoviz_data(filename)
     return
 
 
@@ -140,7 +158,9 @@ def main(argv):
         "add-user": add_user_UI,
         "display-draft-sheet": display_draft_sheet_UI,
         "validate-draft-sheet": validate_draft_sheet_UI,
+        "show-player-picks": show_player_picks_UI,
         "parse-bans": parse_bans_UI,
+        "show-dracoviz-data": show_dracoviz_data_UI,
     }
     
     action = args.action
