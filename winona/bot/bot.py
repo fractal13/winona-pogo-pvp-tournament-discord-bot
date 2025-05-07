@@ -58,10 +58,13 @@ class WinonaBot:
         self.sheet_url = g_sheet_url
 
         dotenv.load_dotenv()
+        # used in Client constructor
         self.TOKEN = os.getenv("BOT_TOKEN")
-        self.GUILD_ID = getenv_int_list("GUILD_ID")
-        self.ROLE_ID = getenv_int("ROLE_ID")
+        # self.GUILD_ID = getenv_int_list("GUILD_ID")
+        # self.ROLE_ID = getenv_int("ROLE_ID")
+        # used in admin_check
         self.ADMIN_CHANNEL_IDS = getenv_int_list("ADMIN_CHANNEL_ID")
+        # used in Client constructor
         self.DEBUG_GUILD_ID = getenv_int("DEBUG_GUILD_ID")
 
         if self.DEBUG_GUILD_ID:
