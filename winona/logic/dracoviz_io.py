@@ -20,3 +20,12 @@ def read_dracoviz_data(filename):
             pmsg = " ".join([ "{}".format(p["speciesName"]) for p in player["pokemon"]])
         print(msg + " " + pmsg)
     return
+
+def report_dracoviz_data(filename):
+    data = load_json(filename)
+    for player in data:
+        msg = "{}".format(player["name"])
+        games = player["wins"] + player["losses"]
+        gmsg = "{} {} {}".format(games, player["wins"], player["losses"])
+        print(gmsg + " " + msg)
+    return

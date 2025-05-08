@@ -10,7 +10,7 @@ from .google_commands import display_draft_sheet
 from ..logic.sheet_validation import validate_draft_sheet
 from ..logic.sheet_validation import parse_bans
 from ..logic.sheet_validation import show_player_picks
-from ..logic.dracoviz_io import read_dracoviz_data
+from ..logic.dracoviz_io import read_dracoviz_data, report_dracoviz_data
 from .guild_commands import create_guild_database, add_guild, remove_guild, list_guilds, set_guild_admin_channel_id, add_guild_tournament_channel_id, remove_guild_tournament_channel_id
 
 import argparse
@@ -29,7 +29,7 @@ def parse_arguments(argv):
                  "create-guild-db", "add-guild", "remove-guild", "list-guilds", "set-admin-channel-id", "add-tournament-channel-id", "remove-tournament-channel-id",
                  "display-draft-sheet", "validate-draft-sheet", "parse-bans",
                  "show-player-picks",
-                 "show-dracoviz-data"],
+                 "show-dracoviz-data", "report-dracoviz-data"],
         help="Major action to perform"
     )
     parser.add_argument(
@@ -151,6 +151,11 @@ def show_dracoviz_data_UI(args):
     read_dracoviz_data(filename)
     return
 
+def report_dracoviz_data_UI(args):
+    filename = args.filename
+    report_dracoviz_data(filename)
+    return
+
 
 def create_guild_database_UI(args):
     db_file = args.db_file
@@ -232,6 +237,7 @@ def main(argv):
         #
         # DRACOVIZ-START
         "show-dracoviz-data": show_dracoviz_data_UI,
+        "report-dracoviz-data": report_dracoviz_data_UI,
         # DRACOVIZ-END
     }
     
