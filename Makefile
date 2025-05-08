@@ -8,13 +8,18 @@ $(VENV):
 install: install-deb install-pip
 
 install-deb:
-	dpkg -l | egrep '^ii *libsqlite3-dev' 2>&1 > /dev/null || sudo apt install libsqlite3-dev
-	dpkg -l | egrep '^ii *python3.12-venv' 2>&1 > /dev/null || sudo apt install python3.12-venv
-	dpkg -l | egrep '^ii *gcc ' 2>&1 > /dev/null || sudo apt install gcc
-	dpkg -l | egrep '^ii *python3-dev ' 2>&1 > /dev/null || sudo apt install python3-dev
+	for package in libsqlite3-dev python3.12-venv gcc python3-dev; do \
+		dpkg -l | egrep '^ii *'$${package}' ' 2>&1 > /dev/null || sudo apt install $${package}; \
+	done
+
 install-pip: $(VENV)
 	. $(VENV)/bin/activate; pip3 install -U -r requirements.txt
 
 launch-bot:
 	. $(VENV)/bin/activate; ./main.py bot
 
+create-db:
+	$(MAKE) -C external all
+	. $(VENV)/bin/activate; ./main.py cli create-pokemon-db
+	. $(VENV)/bin/activate; ./main.py cli create-user-db
+	. $(VENV)/bin/activate; ./main.py cli create-guild-db
