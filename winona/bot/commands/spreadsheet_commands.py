@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import interactions
-from .checks import admin_channel_check
+from .checks import admin_channel_check, tournament_channel_check
 from ...logic.sheet_validation import validate_draft_sheet_aux, parse_bans_aux
 from ...logic.sheet_validation import parse_picks_aux
 from ...api import read_public_google_sheet
@@ -57,7 +57,7 @@ class SpreadsheetCommands(interactions.Extension):
         required=True,
         autocomplete=True,
     )
-    @interactions.check(admin_channel_check)
+    @interactions.check(tournament_channel_check)
     async def show_player_picks(self, ctx: interactions.SlashContext, player_name: str):
         if ctx.guild is None:
             await ctx.send("This command can only be used in a server.")

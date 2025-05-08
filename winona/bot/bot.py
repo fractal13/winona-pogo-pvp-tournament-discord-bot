@@ -57,13 +57,24 @@ class WinonaBot:
             self.db_manager = None
         self.sheet_url = g_sheet_url
 
+        if self.db_manager:
+            admin_channel_ids = []
+            tournament_channel_ids = []
+            for guild in self.db_manager.get_all_guilds():
+                admin_channel_ids.append(guild.admin_channel_id)
+                tournament_channel_ids += guild.tournament_channel_ids
+            self.ADMIN_CHANNEL_IDS = admin_channel_ids
+            self.TOURNAMENT_CHANNEL_IDS = tournament_channel_ids
+        else:
+            self.ADMIN_CHANNEL_IDS = getenv_int_list("ADMIN_CHANNEL_ID")
+            self.TOURNAMENT_CHANNEL_IDS = getenv_int_list("TOURNAMENT_CHANNEL_ID")
+
         dotenv.load_dotenv()
         # used in Client constructor
         self.TOKEN = os.getenv("BOT_TOKEN")
         # self.GUILD_ID = getenv_int_list("GUILD_ID")
         # self.ROLE_ID = getenv_int("ROLE_ID")
         # used in admin_check
-        self.ADMIN_CHANNEL_IDS = getenv_int_list("ADMIN_CHANNEL_ID")
         # used in Client constructor
         self.DEBUG_GUILD_ID = getenv_int("DEBUG_GUILD_ID")
 
